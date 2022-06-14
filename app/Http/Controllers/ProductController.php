@@ -17,7 +17,7 @@ class ProductController extends Controller {
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\Response|\Illuminate\View\View
      */
     public function index() {
-        $products = Product::all();
+        $products = Product::paginate( 5 );
 
         return view( 'products.index', ['products' => $products] );
     }

@@ -2,7 +2,11 @@
 
 <style>
     td:nth-child(3) {
-        width: 50%;
+        width: 60%;
+    }
+
+    td:nth-child(4) {
+        width: 35%;
     }
 </style>
 @section('content')
@@ -70,13 +74,22 @@
 
                                         @endforeach --}}
                                         <dt class="col-sm-3 pb-0">
-                                            SM/ Red/ V-Nick
+                                            @foreach ($product->variantPrices as $variantPrice)
+                                                <div class="py-1">
+                                                    {{ $variantPrice->variantOne?->variant . '/' . $variantPrice->variantTwo?->variant . '/' . $variantPrice->variantThree?->variant }}
+                                                </div>
+                                            @endforeach
                                         </dt>
                                         <dd class="col-sm-9">
-                                            <dl class="row mb-0">
-                                                <dt class="col-sm-4 pb-0">Price : {{ number_format(200, 2) }}</dt>
-                                                <dd class="col-sm-8 pb-0">InStock : {{ number_format(50, 2) }}</dd>
-                                            </dl>
+                                            @foreach ($product->variantPrices as $variantPrice)
+                                                <dl class="row mb-0">
+                                                    <dt class="col-sm-6 pb-0">Price :
+                                                        {{ number_format($variantPrice->price, 2) }}</dt>
+                                                    <dd class="col-sm-6 pb-0">InStock :
+                                                        {{ number_format($variantPrice->stock, 2) }}</dd>
+                                                </dl>
+                                            @endforeach
+
                                         </dd>
                                     </dl>
                                     <button onclick="$('#variant').toggleClass('h-auto')" class="btn btn-sm btn-link">Show
@@ -100,7 +113,7 @@
         <div class="card-footer">
             <div class="row justify-content-between">
                 <div class="col-md-6">
-                    <p>Showing 1 to 10 out of 100</p>
+                    <p>{{ $products->links() }}</p>
                 </div>
                 <div class="col-md-2">
 

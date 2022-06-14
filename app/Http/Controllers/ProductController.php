@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\ProductVariant;
+use App\Models\ProductVariantPrice;
 use App\Models\Variant;
+use App\Services\ProductService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller {
     /**
@@ -13,7 +17,9 @@ class ProductController extends Controller {
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\Response|\Illuminate\View\View
      */
     public function index() {
-        return view( 'products.index' );
+        $products = Product::all();
+
+        return view( 'products.index', ['products' => $products] );
     }
 
     /**
@@ -33,7 +39,61 @@ class ProductController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function store( Request $request ) {
-        
+
+        // form validation
+        $validator = Validator::make( $request->all(), [
+            'title'                  => 'required|string',
+            'sku'                    => 'required|unique:products,sku',
+            'description'            => 'sometimes',
+            'product_variant'        => 'sometimes|array',
+            'product_variant_prices' => 'sometimes|array'
+        ] );
+
+        if ( $validator->fails() ) {
+            return response()
+                ->json( $validator->getMessageBag() );
+        }
+
+        // create product
+        $product = Product::create( $request->only( ['title', 'sku', 'description'] ) );
+
+        // create variants
+        $variants = [];
+        foreach ( $request->product_variant as $variant ) {
+            foreach ( $variant['tags'] as $tag ) {
+                $pv = ProductVariant::create( [
+                    'variant'    => $tag,
+                    'product_id' => $product->id,
+                    'variant_id' => $variant['option']
+                ] );
+
+                $variants[$variant['option']][] = $pv->id;
+
+            }
+        }
+
+        // get combined variations
+        $combinedVariants = ProductService::getComb( array_values( $variants ) );
+
+        // create product variants price
+        $productVariantPrices = $request->product_variant_prices;
+
+        foreach ( $combinedVariants as $index => $variant ) {
+            ProductVariantPrice::create( [
+                'product_variant_one'   => isset( $variant[0] ) ? $variant[0] : null,
+                'product_variant_two'   => isset( $variant[1] ) ? $variant[1] : null,
+                'product_variant_three' => isset( $variant[2] ) ? $variant[2] : null,
+                'price'                 => $productVariantPrices[$index]['price'],
+                'stock'                 => $productVariantPrices[$index]['stock'],
+                'product_id'            => $product->id
+            ] );
+        }
+
+        $data = [
+            'message' => 'New product has been created'
+        ];
+
+        return response()->json( $data );
     }
 
     /**

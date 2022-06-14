@@ -3,21 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
-use App\Models\ProductVariant;
-use App\Models\ProductVariantPrice;
 use App\Models\Variant;
 use Illuminate\Http\Request;
 
-class ProductController extends Controller
-{
+class ProductController extends Controller {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\Response|\Illuminate\View\View
      */
-    public function index()
-    {
-        return view('products.index');
+    public function index() {
+        return view( 'products.index' );
     }
 
     /**
@@ -25,10 +21,9 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\Response|\Illuminate\View\View
      */
-    public function create()
-    {
+    public function create() {
         $variants = Variant::all();
-        return view('products.create', compact('variants'));
+        return view( 'products.create', compact( 'variants' ) );
     }
 
     /**
@@ -37,11 +32,9 @@ class ProductController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request)
-    {
-
+    public function store( Request $request ) {
+        
     }
-
 
     /**
      * Display the specified resource.
@@ -49,8 +42,7 @@ class ProductController extends Controller
      * @param \App\Models\Product $product
      * @return \Illuminate\Http\Response
      */
-    public function show($product)
-    {
+    public function show( $product ) {
 
     }
 
@@ -60,10 +52,9 @@ class ProductController extends Controller
      * @param \App\Models\Product $product
      * @return \Illuminate\Http\Response
      */
-    public function edit(Product $product)
-    {
+    public function edit( Product $product ) {
         $variants = Variant::all();
-        return view('products.edit', compact('variants'));
+        return view( 'products.edit', compact( 'variants' ) );
     }
 
     /**
@@ -73,8 +64,7 @@ class ProductController extends Controller
      * @param \App\Models\Product $product
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Product $product)
-    {
+    public function update( Request $request, Product $product ) {
         //
     }
 
@@ -84,8 +74,7 @@ class ProductController extends Controller
      * @param \App\Models\Product $product
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Product $product)
-    {
+    public function destroy( Product $product ) {
         //
     }
 }

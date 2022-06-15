@@ -5,7 +5,7 @@
                 <div class="card shadow mb-4">
                     <div class="card-body">
                         <div class="form-group">
-                            <label for="">{{ product.title }}</label>
+                            <label for="">Product Title</label>
                             <input type="text" v-model="product_name" placeholder="Product Name" class="form-control">
                         </div>
                         <div class="form-group">
@@ -107,30 +107,32 @@ export default {
         InputTag
     },
     props: {
+        product: {
+            type: Object,
+            required: true
+        },
         variants: {
             type: Array,
             required: true
         },
-        product: {
-            type: Object,
+        product_variants: {
+            type: Array,
+            required: true
+        },
+        product_variant_price: {
+            type: Array,
             required: true
         },
 
     },
     data() {
-        console.log(this.product)
         return {
             product_name: this.product.title,
             product_sku: this.product.sku,
             description: this.product.description,
             images: [],
-            product_variant: [
-                {
-                    option: this.variants[0].id,
-                    tags: []
-                }
-            ],
-            product_variant_prices: [],
+            product_variant: this.product_variants,
+            product_variant_prices: this.product_variant_price,
             dropzoneOptions: {
                 url: '/product/image',
                 thumbnailWidth: 150,
@@ -172,6 +174,7 @@ export default {
             })
         },
 
+        // push uploades product image to images object
         fileUploaded (file, response) {
             this.images.push(response.url)
         },
@@ -209,11 +212,11 @@ export default {
 
             console.log(product);
         }
-
-
     },
-    mounted() {
-        console.log()
+
+    mounted(){
+        console.log(this.variants)
     }
 }
+
 </script>

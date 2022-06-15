@@ -2120,7 +2120,7 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   mounted: function mounted() {
-    console.log('Component mounted.');
+    console.log(this.variants);
   }
 });
 
@@ -2248,27 +2248,31 @@ __webpack_require__.r(__webpack_exports__);
     InputTag: vue_input_tag__WEBPACK_IMPORTED_MODULE_2___default.a
   },
   props: {
+    product: {
+      type: Object,
+      required: true
+    },
     variants: {
       type: Array,
       required: true
     },
-    product: {
-      type: Object,
+    product_variants: {
+      type: Array,
+      required: true
+    },
+    product_variant_price: {
+      type: Array,
       required: true
     }
   },
   data: function data() {
-    console.log(this.product);
     return {
       product_name: this.product.title,
       product_sku: this.product.sku,
       description: this.product.description,
       images: [],
-      product_variant: [{
-        option: this.variants[0].id,
-        tags: []
-      }],
-      product_variant_prices: [],
+      product_variant: this.product_variants,
+      product_variant_prices: this.product_variant_price,
       dropzoneOptions: {
         url: '/product/image',
         thumbnailWidth: 150,
@@ -2316,6 +2320,7 @@ __webpack_require__.r(__webpack_exports__);
         });
       });
     },
+    // push uploades product image to images object
     fileUploaded: function fileUploaded(file, response) {
       this.images.push(response.url);
     },
@@ -2352,7 +2357,7 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   mounted: function mounted() {
-    console.log();
+    console.log(this.variants);
   }
 });
 
@@ -51108,9 +51113,7 @@ var render = function () {
         _c("div", { staticClass: "card shadow mb-4" }, [
           _c("div", { staticClass: "card-body" }, [
             _c("div", { staticClass: "form-group" }, [
-              _c("label", { attrs: { for: "" } }, [
-                _vm._v(_vm._s(_vm.product.title)),
-              ]),
+              _c("label", { attrs: { for: "" } }, [_vm._v("Product Title")]),
               _vm._v(" "),
               _c("input", {
                 directives: [
@@ -63761,8 +63764,8 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
-Vue.component('create-product', __webpack_require__(/*! ./components/CreateProduct.vue */ "./resources/js/components/CreateProduct.vue")["default"]);
-Vue.component('edit-product', __webpack_require__(/*! ./components/EditProduct.vue */ "./resources/js/components/EditProduct.vue")["default"]);
+Vue.component("create-product", __webpack_require__(/*! ./components/CreateProduct.vue */ "./resources/js/components/CreateProduct.vue")["default"]);
+Vue.component("edit-product", __webpack_require__(/*! ./components/EditProduct.vue */ "./resources/js/components/EditProduct.vue")["default"]);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -63770,7 +63773,7 @@ Vue.component('edit-product', __webpack_require__(/*! ./components/EditProduct.v
  */
 
 var app = new Vue({
-  el: '#app'
+  el: "#app"
 });
 
 /***/ }),
@@ -63901,14 +63904,15 @@ __webpack_require__.r(__webpack_exports__);
 /*!*************************************************!*\
   !*** ./resources/js/components/EditProduct.vue ***!
   \*************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _EditProduct_vue_vue_type_template_id_18e6b02c___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./EditProduct.vue?vue&type=template&id=18e6b02c& */ "./resources/js/components/EditProduct.vue?vue&type=template&id=18e6b02c&");
 /* harmony import */ var _EditProduct_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EditProduct.vue?vue&type=script&lang=js& */ "./resources/js/components/EditProduct.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _EditProduct_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(["default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _EditProduct_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
 
@@ -63938,7 +63942,7 @@ component.options.__file = "resources/js/components/EditProduct.vue"
 /*!**************************************************************************!*\
   !*** ./resources/js/components/EditProduct.vue?vue&type=script&lang=js& ***!
   \**************************************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";

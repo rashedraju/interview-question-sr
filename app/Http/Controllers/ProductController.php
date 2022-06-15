@@ -79,6 +79,7 @@ class ProductController extends Controller {
                 'file_path'  => $image
             ] );
         }
+
         // create variants
         $variants = [];
         foreach ( $request->product_variant as $variant ) {
@@ -135,8 +136,28 @@ class ProductController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function edit( Product $product ) {
+        // prepare product variants
+        $product_variants = Variant::all()->map( function ( $variant ) use ( $product ) {
+            $productVariants = $variant->productVariants()->where( 'product_id', $product->id )->get()->map( fn( $v ) => $v->variant );
+            return [
+                'option' => $variant->id,
+                'tags'   => $productVariants
+            ];
+        } );
+
+        $product_variants = $product_variants->filter( fn( $v ) => $v['tags']->count() );
+
         $variants = Variant::all();
-        return view( 'products.edit', compact( 'variants', 'product' ) );
+
+        $product_variant_price = $product->variantPrices->map( function ( $variantPrice ) {
+            return [
+                'price' => $variantPrice->price,
+                'stock' => $variantPrice->stock,
+                'title' => $variantPrice->variantOne?->variant . "/" . $variantPrice->variantTwo?->variant . "/" . $variantPrice->variantThree?->variant
+            ];
+        } );
+
+        return view( 'products.edit', compact( 'variants', 'product', 'product_variants', 'product_variant_price' ) );
     }
 
     /**
@@ -169,8 +190,45 @@ class ProductController extends Controller {
         // create product
         $product->update( $request->only( ['title', 'sku', 'description'] ) );
 
-        //
+        // save product images
+        $productImages = array_map( fn( $image ) => new ProductImage( ['product_id' => $product->id, 'file_path' => $image] ), $request->product_image );
 
+        $product->images()->saveMany( $productImages );
+
+        // update product variants
+        $product->variants()->delete();
+        $variants = [];
+        foreach ( $request->product_variant as $variant ) {
+            foreach ( $variant['tags'] as $tag ) {
+                $pv = ProductVariant::create( [
+                    'variant'    => $tag,
+                    'product_id' => $product->id,
+                    'variant_id' => $variant['option']
+                ] );
+
+                $variants[$variant['option']][] = $pv->id;
+            }
+        }
+
+        // update product variant prices
+        $combinedVariants = ProductService::getComb( array_values( $variants ) );
+
+        // delete previous variant prices
+        $product->variantPrices()->delete();
+
+        // create product variants price
+        $productVariantPrices = $request->product_variant_prices;
+
+        foreach ( $combinedVariants as $index => $variant ) {
+            ProductVariantPrice::create( [
+                'product_variant_one'   => isset( $variant[0] ) ? $variant[0] : null,
+                'product_variant_two'   => isset( $variant[1] ) ? $variant[1] : null,
+                'product_variant_three' => isset( $variant[2] ) ? $variant[2] : null,
+                'price'                 => $productVariantPrices[$index]['price'],
+                'stock'                 => $productVariantPrices[$index]['stock'],
+                'product_id'            => $product->id
+            ] );
+        }
         $data = [
             'message' => 'Product has been updated'
         ];

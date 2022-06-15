@@ -9,6 +9,8 @@ class Product extends Model {
         'title', 'sku', 'description'
     ];
 
+    protected $with = ['images', 'variants', 'variantPrices'];
+
     // filter expense data
     public function scopeFilter( $query, array $filters ) {
 
@@ -46,5 +48,9 @@ class Product extends Model {
 
     public function variantPrices() {
         return $this->hasMany( ProductVariantPrice::class, 'product_id' );
+    }
+
+    public function images() {
+        return $this->hasMany( ProductImage::class, 'product_id' );
     }
 }

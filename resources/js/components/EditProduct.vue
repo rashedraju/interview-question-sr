@@ -5,7 +5,7 @@
                 <div class="card shadow mb-4">
                     <div class="card-body">
                         <div class="form-group">
-                            <label for="">Product Name</label>
+                            <label for="">{{ product.title }}</label>
                             <input type="text" v-model="product_name" placeholder="Product Name" class="form-control">
                         </div>
                         <div class="form-group">
@@ -110,13 +110,19 @@ export default {
         variants: {
             type: Array,
             required: true
-        }
+        },
+        product: {
+            type: Object,
+            required: true
+        },
+
     },
     data() {
+        console.log(this.product)
         return {
-            product_name: '',
-            product_sku: '',
-            description: '',
+            product_name: this.product.title,
+            product_sku: this.product.sku,
+            description: this.product.description,
             images: [],
             product_variant: [
                 {
@@ -195,7 +201,7 @@ export default {
             }
 
 
-            axios.post('/product', product).then(response => {
+            axios.put(`/product/${this.product.id}`, product).then(response => {
                 console.log(response.data);
             }).catch(error => {
                 console.log(error);
@@ -207,7 +213,7 @@ export default {
 
     },
     mounted() {
-        console.log('Component mounted.')
+        console.log()
     }
 }
 </script>

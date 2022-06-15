@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ImageController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -27,4 +28,5 @@ Route::middleware( 'auth' )->group( function () {
     Route::resource( 'product', 'ProductController' );
     Route::resource( 'blog', 'BlogController' );
     Route::resource( 'blog-category', 'BlogCategoryController' );
+    Route::post( '/product/image', [ImageController::class, 'uploadProductImage'] );
 } );

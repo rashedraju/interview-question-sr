@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\ProductImage;
 use App\Models\ProductVariant;
 use App\Models\ProductVariantPrice;
 use App\Models\Variant;
 use App\Services\ProductService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class ProductController extends Controller {
     /**
@@ -59,7 +61,8 @@ class ProductController extends Controller {
             'sku'                    => 'required|unique:products,sku',
             'description'            => 'sometimes',
             'product_variant'        => 'sometimes|array',
-            'product_variant_prices' => 'sometimes|array'
+            'product_variant_prices' => 'sometimes|array',
+            'product_image'          => 'sometimes|array'
         ] );
 
         if ( $validator->fails() ) {
@@ -70,6 +73,12 @@ class ProductController extends Controller {
         // create product
         $product = Product::create( $request->only( ['title', 'sku', 'description'] ) );
 
+        foreach ( $request->product_image as $image ) {
+            ProductImage::create( [
+                'product_id' => $product->id,
+                'file_path'  => $image
+            ] );
+        }
         // create variants
         $variants = [];
         foreach ( $request->product_variant as $variant ) {
@@ -127,7 +136,7 @@ class ProductController extends Controller {
      */
     public function edit( Product $product ) {
         $variants = Variant::all();
-        return view( 'products.edit', compact( 'variants' ) );
+        return view( 'products.edit', compact( 'variants', 'product' ) );
     }
 
     /**
@@ -138,7 +147,35 @@ class ProductController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function update( Request $request, Product $product ) {
+        // form validation
+        $validator = Validator::make( $request->all(), [
+            'title'                  => 'required|string',
+            'sku'                    => [
+                'required',
+                Rule::unique( 'products' )->ignore( $product->id, 'id' )
+            ],
+
+            'description'            => 'sometimes',
+            'product_variant'        => 'sometimes|array',
+            'product_variant_prices' => 'sometimes|array',
+            'product_image'          => 'sometimes|array'
+        ] );
+
+        if ( $validator->fails() ) {
+            return response()
+                ->json( $validator->getMessageBag() );
+        }
+
+        // create product
+        $product->update( $request->only( ['title', 'sku', 'description'] ) );
+
         //
+
+        $data = [
+            'message' => 'Product has been updated'
+        ];
+
+        return response()->json( $data );
     }
 
     /**

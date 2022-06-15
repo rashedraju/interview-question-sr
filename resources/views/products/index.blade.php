@@ -22,8 +22,14 @@
                     <input type="text" name="title" placeholder="Product Title" class="form-control">
                 </div>
                 <div class="col-md-2">
-                    <select name="variant" id="" class="form-control">
-
+                    <select name="variant" id="" class="dropdown-menu">
+                        @foreach ($productVariants as $productVariant)
+                            <option disabled style="font-weight: bold; font-size: 1.2rem">{{ $productVariant['variant'] }}
+                            </option>
+                            @foreach ($productVariant['variants'] as $variant)
+                                <option value="{{ $variant->id }}">{{ $variant->variant }}</option>
+                            @endforeach
+                        @endforeach
                     </select>
                 </div>
 

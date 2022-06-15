@@ -17,9 +17,22 @@ class ProductController extends Controller {
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\Response|\Illuminate\View\View
      */
     public function index() {
-        $products = Product::paginate( 5 );
+        $attr = request()->validate( [
+            'title'      => 'sometimes',
+            'variant'    => 'sometimes',
+            'price_from' => 'sometimes',
+            'price_to'   => 'sometimes',
+            'date'       => 'sometimes'
+        ] );
 
-        return view( 'products.index', ['products' => $products] );
+        $products = Product::filter( $attr )->paginate( 5 );
+        $productVariants = Variant::all()->map( function ( $v ) {
+            return [
+                'variant'  => $v->title,
+                'variants' => $v->productVariants->unique( 'variant' )
+            ];
+        } );
+        return view( 'products.index', compact( ['products', 'productVariants'] ) );
     }
 
     /**
